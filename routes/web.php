@@ -14,5 +14,14 @@
 Route::get('/', function () {
 	//echo "DAADD";die;
 	phpinfo();
-    return view('welcome');
+	return view('welcome');
+});
+
+Route::prefix('/test')->group(function(){
+
+    Route::get('/decrypt2','TestController@decrypt2');
+    
+    Route::get('/encrypt1','TestController@encrypt1');
+
+	Route::get('/rsa','TestController@rsa');
 });
