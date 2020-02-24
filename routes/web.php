@@ -25,3 +25,4 @@ Route::prefix('/test')->group(function(){
 
 	Route::get('/rsa','TestController@rsa');
 });
+Route::get('/rsaSign','TestController@rsaSign');

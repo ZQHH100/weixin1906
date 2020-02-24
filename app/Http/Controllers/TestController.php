@@ -90,14 +90,38 @@ class TestController extends Controller
         //echo $key;die;
         //加密
         openssl_public_encrypt($data,$enc_data,$key);
-        var_dump($enc_data);echo "<br>";
+        //var_dump($enc_data);echo "<br>";
 
         $send_data = base64_encode($enc_data);
         //把编译后的加密数据发送给A
 
         $url = 'http://api.1906.com/rsa/decrypt1?data='.urlencode($send_data);
         $response = file_get_contents($url);
-        var_dump($response);
+       // echo "<hr>";
+       // echo "收到的响应数据:".$response;
+        //var_dump($response);
 
+        $arr = json_decode($response,true);
+        echo "收到的响应密文:".$arr['data'];
+
+        $enc_str=base64_decode($arr['data']);
+        //对数据进行解密
+        $key = file_get_contents(storage_path('keys/priv_b.key'));
+        openssl_private_decrypt($enc_str,$dec_str,$key);
+        echo "解密响应的密文:".$dec_str;
+    }
+
+    public function rsaSign(){
+        $data = "hello world";
+        $priv_key_id = openssl_pkey_get_private("file://".storage_path('keys/priv_b.key'));
+        //生成签名
+        openssl_sign($data,$sign,$priv_key_id,OPENSSL_ALGO_SHA256);
+        //var_dump($sign);
+
+        $b64_sign_str= base64_encode($sign);
+        echo "base64后签名:".$b64_sign_str;
+
+        $url="http://api.1906.com/verify1?data=".$data . 'sign='.urlencode($b64_sign_str);
+        file_get_contents($url);
     }
 }
